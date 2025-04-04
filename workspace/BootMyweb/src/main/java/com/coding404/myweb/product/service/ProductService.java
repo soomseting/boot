@@ -10,7 +10,7 @@ public interface ProductService {
     //service에 먼저 선언함 getList라는 매개변수가 있다라고 하는 놈을 생성 //mapper.java에도 똑같이 생성
 //    ArrayList<ProductVO> getList(String prodWriter);
     ArrayList<ProductVO> getList(String prodWriter, Criteria cri);
-    int getTotal(String prodWriter);
+    int getTotal(String prodWriter, Criteria cri);
 
 
     ProductVO getDetail(String prodId);

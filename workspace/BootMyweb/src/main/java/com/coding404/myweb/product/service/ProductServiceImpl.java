@@ -24,8 +24,8 @@ public class ProductServiceImpl implements ProductService { //ProductService를 
     }
 
     @Override
-    public int getTotal(String prodWriter) {
-        return productMapper.getTotal(prodWriter); //전체 게시글 수
+    public int getTotal(String prodWriter, Criteria cri) {
+        return productMapper.getTotal(prodWriter, cri); //전체 게시글 수
     }
 
     @Override

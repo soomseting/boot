@@ -25,18 +25,65 @@
                 #{prodComment})
     </insert>
 
-    <select id="getList" resultType="ProductVO"> -- 결과 타입은 ProductVO로 받음
-    SELECT *
-    FROM PRODUCT
-    WHERE PROD_WRITER = #{prodWriter}
-    ORDER BY PROD_ID DESC
-    LIMIT #{cri.pageStart}, #{cri.amount}
+    <!--
+     동적쿼리구문
+     if, choose, foreach
+     test에는 getter명이 들어감
+     -->
+    <select id="getList" resultType="ProductVO">-- 결과 타입은 ProductVO로 받음
+        SELECT *
+        FROM PRODUCT
+        WHERE PROD_WRITER = #{prodWriter}
+        <if test="cri.searchName != '' and cri.searchName != null">
+            AND PROD_NAME LIKE CONCAT('%',#{cri.searchName},'%')
+        </if>
+        <if test="cri.searchContent != '' and cri.searchContent != null">
+            AND PROD_NAME LIKE CONCAT('%',#{cri.searchContent},'%')
+        </if>
+        <if test="cri.startDate != '' and cri.startDate != null">
+            <![CDATA[
+            AND STR_TO_DATE(prod_enddate, '%Y-%m-%d') >= STR_TO_DATE('#{cri.startDate}','%Y-%m-%d')
+            ]]>
+        </if>
+        <if test="cri.endDate != '' and cri.endDate != null">
+            <![CDATA[
+            AND STR_TO_DATE(prod_enddate, '%Y-%m-%d') <= STR_TO_DATE('#{cri.endDate}','%Y-%m-%d')
+            ]]>
+        </if>
+        ORDER BY
+        <if test="cri.searchPrice == 'asc'">
+            PROD_PRICE,
+        </if>
+        <if test="cri.searchPrice == 'desc'">
+            PROD_PRICE DESC,
+        </if>
+        PROD_ID DESC
+        LIMIT #{cri.pageStart}, #{cri.amount}
     </select>
 
     <select id="getTotal" resultType="int">
-        SELECT COUNT(*) AS TOTAL
-        FROM PRODUCT
-        WHERE PROD_WRITER = #{prodWriter}
+        select count(*) as total
+        from PRODUCT
+        where prod_writer = #{prodWriter}
+        <if test="cri.searchName != '' and cri.searchName != null">
+            and prod_name like concat('%', #{cri.searchName}, '%')
+        </if>
+
+        <if test="cri.searchContent != '' and cri.searchContent != null">
+            and prod_content like concat('%', #{cri.searchContent}, '%')
+        </if>
+
+        <if test="cri.startDate != '' and cri.startDate != null">
+            <![CDATA[
+                and str_to_date(prod_enddate, '%Y-%m-%d') >=  str_to_date(#{cri.startDate}, '%Y-%m-%d')
+            ]]>
+        </if>
+
+        <if test="cri.endDate != '' and cri.endDate != null">
+            <![CDATA[
+            and str_to_date(prod_enddate, '%Y-%m-%d') <= str_to_date(#{cri.endDate}, '%Y-%m-%d')
+            ]]>
+        </if>
     </select>
 
     <select id="getDetail" resultType="ProductVO">
@@ -59,6 +106,8 @@
     </update>
 
     <delete id="productDelete">
-        DELETE FROM PRODUCT WHERE PROD_ID = #{prodId}
+        DELETE
+        FROM PRODUCT
+        WHERE PROD_ID = #{prodId}
     </delete>
 </mapper>
