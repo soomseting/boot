@@ -24,4 +24,7 @@ public class ProductVO {
     private String prodPurchaseYn;
     private String prodContent;
     private String prodComment;
+
+    //N:1조인을 위한 컬럼
+    private String categoryNav;
 }

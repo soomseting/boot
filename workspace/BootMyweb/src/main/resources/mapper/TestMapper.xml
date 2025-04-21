@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coding404.myweb.testcode.TestMapper">
+
+    <!--
+    id에는 resultMap의 이름이 들어감
+    type에는 객체타입
+
+    id태크에는 키에 대한 맵핑을 씁니다
+    property는 멤버변수 명
+    column은 실제 컬럼 명
+    N:1맵핑에서는 association
+    -->
+    <resultMap id="OrderToMember" type="DemoOrderVO">
+    <!-- id - 키값 --> <id property="oid" column="oid" />
+    <!-- result --> <result property="mid" column="mid" />
+    <!-- result --> <result property="productName" column="product_name" />
+    <!-- association - 저장되는 컬럼을 직접 연결해줌 -->
+    <association property="member">
+        <!-- 필요한 값만 맵핑 걸어서 적어주면 됨 다 적을 필요 x -->
+        <id property="mid" column="mid"/>
+        <result property="name" column="name"/>
+    </association>
+    </resultMap>
+
+    <!--    <select id="manyToOne" resultType="DemoOrderVO">-->
+    <select id="manyToOne" resultMap="OrderToMember">
+        SELECT *
+        FROM DEMO_ORDER AS O
+        LEFT JOIN DEMO_MEMBER AS M
+        ON O.MID = M.MID
+    </select>
+
+    <resultMap id="memberToOrder" type="DemoMemberVO">
+        <id property="mid" column="mid" />
+        <result property="name" column="name" />
+        <!-- List일 때 -->
+        <!-- ofType - 설명은 기억 안나는데 중요한 놈 -->
+        <collection property="orderList" ofType="DemoOrderVO">
+            <id property="oid" column="oid"/>
+            <result property="mid" column="mid"/>
+            <result property="productName" column="product_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="oneToMany" resultMap="memberToOrder">
+        SELECT *
+        FROM DEMO_MEMBER AS M
+        LEFT JOIN DEMO_ORDER AS O
+        ON M.MID = O.MID
+        WHERE M.MID = 1
+    </select>
+</mapper>
